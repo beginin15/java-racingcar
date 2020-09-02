@@ -3,8 +3,9 @@ package racing.core.domain;
 import racing.core.dto.Trial;
 import racing.core.patterns.MoveStrategy;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class RacingGame {
 
@@ -17,12 +18,11 @@ public class RacingGame {
     }
 
     public List<Trial> run(MoveStrategy movement) {
-        List<Trial> trials = new ArrayList<>();
-        for (int i = 0; i < numberOfTrials; i++) {
-            cars = cars.runTrial(movement);
-            trials.add(new Trial(cars));
-        }
-        return trials;
+        return IntStream.range(0, numberOfTrials)
+                .mapToObj(n -> {
+                    cars = cars.runTrial(movement);
+                    return new Trial(cars);
+                }).collect(Collectors.toList());
     }
 
     public List<Car> getWinners() {
