@@ -8,8 +8,8 @@ public class Trial {
 
     private final Cars cars;
 
-    public Trial(Cars stateOfCarsAtThatTrial) {
-        this.cars = stateOfCarsAtThatTrial;
+    public Trial(Cars cars) {
+        this.cars = cars;
     }
 
     public Cars getCarsAtThatTrial() {
