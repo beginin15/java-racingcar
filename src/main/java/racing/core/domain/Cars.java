@@ -5,6 +5,7 @@ import racing.core.patterns.MoveStrategy;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public final class Cars {
 
@@ -16,33 +17,6 @@ public final class Cars {
         this.cars = cars;
     }
 
-    private void validateList(List<Car> cars) {
-        if (cars.isEmpty()) {
-            throw new IllegalArgumentException(ErrorMessage.EMPTY_CARS.getMessage());
-        }
-    }
-
-    public Cars runTrial(MoveStrategy movement) {
-        List<Car> after = new ArrayList<>();
-        for (Car car : cars) {
-            after.add(car.move(movement));
-        }
-        return new Cars(after);
-    }
-
-    public List<Car> getWinners() {
-        List<Car> orderedCars = getCarsOrderedByPositionDesc();
-        return orderedCars.stream()
-                .filter(car -> orderedCars.get(WINNER).isSamePosition(car))
-                .collect(Collectors.toList());
-    }
-
-    private List<Car> getCarsOrderedByPositionDesc() {
-        List<Car> copy = new ArrayList<>(cars);
-        Collections.sort(copy);
-        return copy;
-    }
-
     public static Cars of(String[] namesOfCars) {
         List<Car> participants = Arrays.stream(namesOfCars)
                 .map(Car::new)
@@ -52,6 +26,33 @@ public final class Cars {
 
     public static Cars of(List<Car> cars) {
         return new Cars(cars);
+    }
+
+    private void validateList(List<Car> cars) {
+        if (cars.isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.EMPTY_CARS.getMessage());
+        }
+    }
+
+    public Cars runTrial(MoveStrategy movement) {
+        List<Car> afterCars = cars.stream()
+                .map(car -> car.move(movement))
+                .collect(Collectors.toList());
+        return new Cars(afterCars);
+    }
+
+    public List<Car> getWinners() {
+        Car firstCar = getFirstOne();
+        return cars.stream()
+                .filter(car -> car.isSamePosition(firstCar))
+                .collect(Collectors.toList());
+    }
+
+    private Car getFirstOne() {
+        return cars.stream()
+                .sorted()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorMessage.EMPTY_CARS.getMessage()));
     }
 
     public List<Car> getCars() {
